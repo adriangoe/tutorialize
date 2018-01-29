@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
+from django.db.models.signals import post_save
 
 
 class College(models.Model):
@@ -42,8 +43,8 @@ class StudentTutorialStatus(models.Model):
         unique_together = (("tutorial", "student"),)
         verbose_name_plural = 'Student-tutorial statuses'
 
-    tutorial = models.OneToOneField(Tutorial, on_delete=models.PROTECT)
-    student = models.OneToOneField(Student, on_delete=models.PROTECT)
+    tutorial = models.ForeignKey(Tutorial, on_delete=models.PROTECT)
+    student = models.ForeignKey(Student, on_delete=models.PROTECT)
     STATUS_OPTIONS = (
         ('O', 'Owner'),
         ('P', 'Pending'),
@@ -51,4 +52,7 @@ class StudentTutorialStatus(models.Model):
         ('R', 'Rejected'),
     )
     status = models.CharField(max_length=1, choices=STATUS_OPTIONS)
+
+    def __str__(self):
+        return "({})".format(self.status), str(self.tutorial), str(self.student)
 
