@@ -1,6 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Tutorial, College, Student, StudentTutorialStatus
+from .models import College, Student, Tutorial, TutorialLink, StudentTutorialStatus
 
-[admin.site.register(model) for model in (Tutorial, College, Student, StudentTutorialStatus)]
+[admin.site.register(model) for model in (College, Student, Tutorial, TutorialLink, StudentTutorialStatus)]

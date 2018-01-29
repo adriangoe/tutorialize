@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractBaseUser
 
 
 class College(models.Model):
-    name = models.CharField(max_length=30)
-    code = models.CharField(max_length=2)
+    name = models.CharField(max_length=30, unique=True)
+    code = models.CharField(max_length=2, unique=True)
 
     def __str__(self):
         return str(self.name)
@@ -12,15 +12,25 @@ class College(models.Model):
 
 class Student(AbstractBaseUser):
     name = models.CharField(max_length=100)
-    email = models.EmailField()
-    colleges = models.ManyToManyField(College)
+    email = models.EmailField(unique=True)
+    majors = models.ManyToManyField(College)
+    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=True)
 
     def __str__(self):
         return str(self.name)
 
+    def has_perm(self, perm, obj=None):
+        # TODO: implement
+        return True
+
+    def has_module_perms(self, app_label):
+        # TODO: implement
+        return True
+
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'colleges']
+    REQUIRED_FIELDS = ['name']
 
 
 class Tutorial(models.Model):
