@@ -1,11 +1,8 @@
-from .models import Student
-
-from django.contrib.auth import login, authenticate
+# from django.contrib.auth import login, authenticate
 # from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+# from django.shortcuts import render, redirect
 from .forms import SignUpForm
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
@@ -14,6 +11,8 @@ from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+from .models import Tutorial, Student, StudentTutorialStatus
+from django.shortcuts import render, redirect
 
 
 def signup(request):
@@ -22,8 +21,6 @@ def signup(request):
 
         if form.is_valid():
             user = form.save()
-            user.is_active = False
-            user.is_staff = True
             user.save()
             token = account_activation_token.make_token(user)
 
@@ -63,8 +60,39 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-        return redirect('admin')
+        return redirect('/admin')
         # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
 
     else:
         return HttpResponse('Activation link is invalid!')
+
+
+def apply(request, tutorial_id):
+    tutorial = Tutorial.objects.get(pk=tutorial_id)
+    student = request.user
+    student = Student.objects.first()
+    s = StudentTutorialStatus(tutorial=tutorial, student=student, status="P")
+    s.save()
+
+    return redirect('/admin/tutorials/tutorial/')
+
+
+def approve(request, tutorial_id, student_id):
+    tutorial = Tutorial.objects.get(pk=tutorial_id)
+    student = Student.objects.get(pk=student_id)
+    status = StudentTutorialStatus.objects.filter(student=student).get(tutorial=tutorial)
+    status.status = "A"
+    status.save()
+
+    return redirect('/admin/tutorials/tutorial/')
+
+
+def reject(request, tutorial_id, student_id):
+    tutorial = Tutorial.objects.get(pk=tutorial_id)
+    student = Student.objects.get(pk=student_id)
+    status = StudentTutorialStatus.objects.filter(student=student).get(tutorial=tutorial)
+    status.status = "R"
+    status.save()
+
+    return redirect('/admin/tutorials/tutorial/')
+

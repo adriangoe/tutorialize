@@ -139,3 +139,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'minerva.tutorialize@gmail.com'
 EMAIL_HOST_PASSWORD = 'MinervaTutorialize1!'
 EMAIL_PORT = 587
+
+# Custom users
+AUTH_USER_MODEL = 'tutorials.Student'
