@@ -1,4 +1,6 @@
 venv
+test
 *.pyc
 staticfiles
 .env
+db.sqlite3
