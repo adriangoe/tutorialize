@@ -70,30 +70,17 @@ def activate(request, uidb64, token):
 
 def apply(request, tutorial_id):
     tutorial = Tutorial.objects.get(pk=tutorial_id)
-    student = request.user
-    student = Student.objects.first()
+    student = Student.objects.get(user=request.user)
     s = StudentTutorialStatus(tutorial=tutorial, student=student, status="P")
     s.save()
 
     return redirect('/admin/tutorials/tutorial/')
 
-
-def approve(request, tutorial_id, student_id):
+def withdraw(request, tutorial_id, student_id):
     tutorial = Tutorial.objects.get(pk=tutorial_id)
     student = Student.objects.get(pk=student_id)
     status = StudentTutorialStatus.objects.filter(student=student).get(tutorial=tutorial)
-    status.status = "A"
-    status.save()
-
-    return redirect('/admin/tutorials/tutorial/')
-
-
-def reject(request, tutorial_id, student_id):
-    tutorial = Tutorial.objects.get(pk=tutorial_id)
-    student = Student.objects.get(pk=student_id)
-    status = StudentTutorialStatus.objects.filter(student=student).get(tutorial=tutorial)
-    status.status = "R"
-    status.save()
+    status.delete()
 
     return redirect('/admin/tutorials/tutorial/')
 

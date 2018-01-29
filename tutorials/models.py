@@ -26,8 +26,8 @@ class Tutorial(models.Model):
     description = models.TextField(max_length=1000)
     colleges = models.ManyToManyField(College)
 
-    def __str__(self):
-        return '{t} ({c})'.format(t=self.title, c=', '.join([str (c) for c in self.colleges.all()]))
+    # def __str__(self):
+    #     return '{t} ({c})'.format(t=self.title, c=', '.join([str (c) for c in self.colleges.all()]))
 
 
 class TutorialLink(models.Model):
@@ -51,5 +51,5 @@ class StudentTutorialStatus(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_OPTIONS)
 
     def __str__(self):
-        return "({})".format(self.status), str(self.tutorial), str(self.student)
+        return "({})".format(self.status) + str(self.tutorial) + str(self.student)
 
