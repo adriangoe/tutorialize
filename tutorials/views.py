@@ -15,6 +15,7 @@ from .models import Tutorial, Student, StudentTutorialStatus
 from django.shortcuts import render, redirect
 
 
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -33,7 +34,7 @@ def signup(request):
                 'token': token,
             })
 
-            to_email = form.cleaned_data.get('email')
+            to_email = form.cleaned_data.get('username')
             email = EmailMessage(
                 mail_subject, message, to=[to_email]
             )
@@ -49,7 +50,7 @@ def signup(request):
 def activate(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
-        user = Student.objects.get(pk=uid)
+        user = User.objects.get(pk=uid)
 
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
