@@ -2,5 +2,5 @@
 Hi {{ owner.name }},
 {{ student.name }} <{{ student.email }}> has withdrawn from your tutorial "{{ tutorial.title }}".
 Please click on the link below to see the current status and applications:
-http://{{ domain }}/admin/tutorials/studenttutorialstatus/?tutorial__id__exact={{ tutorial.pk }}
+http://{{ domain }}/_/tutorials/studenttutorialstatus/?tutorial__id__exact={{ tutorial.pk }}
 {% endautoescape %}

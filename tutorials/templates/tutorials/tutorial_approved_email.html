@@ -4,5 +4,5 @@ Your request to join the tutorial "{{ tutorial.title }}" was approved by its own
 The students currently in the tutorial are:
 {% for s in members %} {{ s.student.name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}
 You can view the tutorial details or change your status at:
-http://{{ domain }}/admin/tutorials/tutorial/{{ tutorial.pk }}
+http://{{ domain }}/_/tutorials/tutorial/{{ tutorial.pk }}
 {% endautoescape %}

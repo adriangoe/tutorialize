@@ -61,7 +61,7 @@ class TutorialAdmin(admin.ModelAdmin):
         return TutorialFilterSet(data=request.GET, queryset=qs).filter()
 
     def college(self, obj):
-        return str(', '.join([str (c) for c in obj.colleges.all()]))
+        return str(', '.join([str(c.code) for c in obj.colleges.all()]))
 
     def open_spots(self, obj):
         n = obj.n_members()
@@ -88,7 +88,7 @@ class TutorialAdmin(admin.ModelAdmin):
             return format_html("Rejected :(")
         elif status and status.status == "O":
             return format_html(
-                '<a class="button" href="/admin/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage</a> {} Applicant',
+                '<a class="button" href="/_/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage {} Applicants</a>',
                 obj.pk, StudentTutorialStatus.objects.filter(tutorial=obj).filter(status="P").count()
             )
         elif obj.n_members() > 5:
