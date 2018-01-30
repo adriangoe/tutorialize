@@ -151,8 +151,7 @@ class TutorialAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
 
-        return TutorialFilterSet(data=request.GET,
-                                 qs=qs.exclude(studenttutorialstatus__student=Student.objects.get(user=request.user))).filter()
+        return qs.exclude(studenttutorialstatus__student=Student.objects.get(user=request.user))
 
     def changelist_view(self, request, extra_context=None):
         # Initial filter by first major
