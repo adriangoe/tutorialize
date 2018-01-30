@@ -16,7 +16,7 @@ from .email_utils import send_email, email_tutorial_owners
 
 def signup(request):
     if request.user.is_authenticated:
-        return redirect('/admin')
+        return redirect('/_/')
 
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -58,7 +58,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-        return redirect('/admin')
+        return redirect('/_/')
         # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
 
     else:
@@ -75,7 +75,7 @@ def apply(request, tutorial_id):
     template = 'tutorials/tutorial_request_email.html'
     email_tutorial_owners(request, student, tutorial, status, mail_subject, template)
 
-    return redirect('/admin/tutorials/tutorial/')
+    return redirect('/_/tutorials/tutorial/')
 
 
 def withdraw(request, tutorial_id, student_id):
@@ -88,5 +88,5 @@ def withdraw(request, tutorial_id, student_id):
     template = 'tutorials/tutorial_withdrawal_email.html'
     email_tutorial_owners(request, student, tutorial, status, mail_subject, template)
 
-    return redirect('/admin/tutorials/tutorial/')
+    return redirect('/_/tutorials/tutorial/')
 
