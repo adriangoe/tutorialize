@@ -33,7 +33,7 @@ def send_email(to_emails, subject, template, context):
 
 
 def email_tutorial_owners(request, student, tutorial, mail_subject, template):
-    owner_statuses = StudentTutorialStatus.objects.get(tutorial=tutorial, status="O")
+    owner_statuses = StudentTutorialStatus.objects.filter(tutorial=tutorial, status="O")
     if owner_statuses is None or len(owner_statuses) == 0:
         logger.error('Found a tutorial without owners: {t}'.format(t=tutorial))
         return
@@ -45,4 +45,4 @@ def email_tutorial_owners(request, student, tutorial, mail_subject, template):
     }
     for owner in owner_statuses:
         context['owner'] = owner
-        send_email(owner.email, mail_subject, template, context)
+        send_email(owner.student.email, mail_subject, template, context)

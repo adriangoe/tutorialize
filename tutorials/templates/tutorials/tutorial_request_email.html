@@ -2,5 +2,5 @@
 Hi {{ owner.name }},
 {{ student.name }} <{{ student.email }}> requested to join your tutorial "{{ tutorial.title }}".
 Please click on the link below to respond to the request:
-http://{{ domain }}/admin/tutorials/tutorial/
+http://{{ domain }}/admin/tutorials/studenttutorialstatus/?tutorial__id__exact={{ tutorial.pk }}
 {% endautoescape %}
