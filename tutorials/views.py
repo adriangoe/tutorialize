@@ -65,12 +65,12 @@ def activate(request, uidb64, token):
 def apply(request, tutorial_id):
     tutorial = Tutorial.objects.get(pk=tutorial_id)
     student = Student.objects.get(user=request.user)
-    s = StudentTutorialStatus(tutorial=tutorial, student=student, status="P")
-    s.save()
+    status = StudentTutorialStatus(tutorial=tutorial, student=student, status="P")
+    status.save()
 
     mail_subject = 'Tutorialize: tutorial join request'
     template = 'tutorials/tutorial_request_email.html'
-    email_tutorial_owners(request, student, tutorial, mail_subject, template)
+    email_tutorial_owners(request, student, tutorial, status, mail_subject, template)
 
     return redirect('/admin/tutorials/tutorial/')
 
@@ -83,7 +83,7 @@ def withdraw(request, tutorial_id, student_id):
 
     mail_subject = 'Tutorialize: tutorial withdrawal'
     template = 'tutorials/tutorial_withdrawal_email.html'
-    email_tutorial_owners(request, student, tutorial, mail_subject, template)
+    email_tutorial_owners(request, student, tutorial, status, mail_subject, template)
 
     return redirect('/admin/tutorials/tutorial/')
 
