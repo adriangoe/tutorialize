@@ -63,7 +63,13 @@ class TutorialAdmin(admin.ModelAdmin):
         return str(', '.join([str (c) for c in obj.colleges.all()]))
 
     def open_spots(self, obj):
-        return 5 - StudentTutorialStatus.objects.filter(tutorial=obj).filter(status__in=["A", "O"]).count()
+        n = obj.n_members()
+        color = 'orange'
+        if n in [3,4]:
+            color = 'green'
+        elif n == 5:
+            color = 'blue'
+        return format_html('<b style="color:{};">{}</b>'.format(color, 5 - n))
 
     def action_buttons(self, obj):
         user = Student.objects.get(user=self.request.user)
@@ -83,7 +89,7 @@ class TutorialAdmin(admin.ModelAdmin):
                 '<a class="button" href="/admin/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage</a> {} Applicant',
                 obj.pk, StudentTutorialStatus.objects.filter(tutorial=obj).filter(status="P").count()
             )
-        elif self.open_spots(obj) <= 0:
+        elif obj.n_members() > 5:
             return format_html(
                 'Tutorial full'
             )
@@ -150,7 +156,7 @@ class TutorialAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return super(TutorialAdmin,self).changelist_view(request)
         referrer = request.META.get('HTTP_REFERER', '')
-        get_param = "colleges__id__exact={}".format(Student.objects.get(user=request.user).majors.all()[0].id) # set default filter on colleges here
+        get_param = "colleges__id__in={}".format(",".join([str(m.id) for m in Student.objects.get(user=request.user).majors.all()])) # set default filter on colleges here
         print(get_param, request.path)
         if len(request.GET) == 0 and '?' not in referrer:
             return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))

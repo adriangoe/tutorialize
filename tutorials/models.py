@@ -33,6 +33,9 @@ class Tutorial(models.Model):
     def __str__(self):
         return '{t} ({c})'.format(t=self.title, c=', '.join([str (c) for c in self.colleges.all()]))
 
+    def n_members(self):
+        return StudentTutorialStatus.objects.filter(tutorial=self).filter(status__in=["A", "O"]).count()
+
 
 class TutorialLink(models.Model):
     tutorial = models.ForeignKey(Tutorial, on_delete=models.PROTECT)
