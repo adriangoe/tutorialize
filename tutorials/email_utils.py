@@ -44,5 +44,5 @@ def email_tutorial_owners(request, student, tutorial, mail_subject, template):
         'domain': get_current_site(request).domain,
     }
     for owner in owner_statuses:
-        context['owner'] = owner
+        context['owner'] = owner.student
         send_email(owner.student.email, mail_subject, template, context)

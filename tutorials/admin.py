@@ -39,7 +39,6 @@ class TutorialLinkInline(admin.TabularInline):
 
 
 class TutorialAdmin(admin.ModelAdmin):
-
     list_per_page = 50
     list_display = ['title', 'description', 'college', 'open_spots', 'action_buttons']
     search_fields = ['title']
@@ -47,6 +46,7 @@ class TutorialAdmin(admin.ModelAdmin):
     inlines = [
         TutorialLinkInline,
     ]
+    ordering = ('-colleges','-title')
 
     def college(self, obj):
         return str(', '.join([str (c) for c in obj.colleges.all()]))
@@ -62,15 +62,23 @@ class TutorialAdmin(admin.ModelAdmin):
             return format_html("PENDING")
         elif status and status.status == "A":
             return format_html(
-                '<a class="button" href="/withdraw/{}">Withdraw</a>',
-                obj.pk
+                '<a class="button" href="/withdraw/{}/{}">Withdraw</a>',
+                obj.pk, user.pk
             )
         elif status and status.status == "R":
             return format_html("Rejected :(")
         elif status and status.status == "O":
             return format_html(
-                '<a class="button" href="/admin/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage</a>',
-                obj.pk
+                '<a class="button" href="/admin/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage</a> {} Applicant',
+                obj.pk, StudentTutorialStatus.objects.filter(tutorial=obj).filter(status="P").count()
+            )
+        elif self.open_spots(obj) <= 0:
+            return format_html(
+                'Tutorial full'
+            )
+        elif StudentTutorialStatus.objects.filter(student=user).filter(status__in=["O","A"]).count() >= 5:
+            return format_html(
+                'You are over your quota of 5'
             )
         return format_html(
             '<a class="button" href="/apply/{}">Apply</a>',
@@ -119,10 +127,20 @@ class TutorialAdmin(admin.ModelAdmin):
         send_email(email_set, mail_subject, template,
                    {'tutorial': obj, 'domain': get_current_site(request).domain})
 
+    def get_queryset(self, request):
+        qs = super(TutorialAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.exclude(studenttutorialstatus__student=Student.objects.get(user=request.user))
+
     def changelist_view(self, request, extra_context=None):
+        # Initial filter by first major
         self.request = request
+        if request.user.is_superuser:
+            return super(TutorialAdmin,self).changelist_view(request)
         referrer = request.META.get('HTTP_REFERER', '')
-        get_param = "colleges__in=['AH','CS']" # set default filter on colleges here
+        get_param = "colleges__id__exact={}".format(Student.objects.get(user=request.user).majors.all()[0].id) # set default filter on colleges here
+        print(get_param, request.path)
         if len(request.GET) == 0 and '?' not in referrer:
             return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
         return super(TutorialAdmin,self).changelist_view(request, extra_context=extra_context)
@@ -137,6 +155,7 @@ class StudentTutorialStatusAdmin(admin.ModelAdmin):
     search_fields = ['tutorial']
     list_filter = ['tutorial']
     readonly_fields = ['tutorial', 'student']
+    ordering = ('-tutorial','-status')
 
     def get_queryset(self, request):
         qs = super(StudentTutorialStatusAdmin, self).get_queryset(request)
@@ -170,3 +189,25 @@ class StudentTutorialStatusAdmin(admin.ModelAdmin):
 
 
 admin.site.register(StudentTutorialStatus, StudentTutorialStatusAdmin)
+
+class MyTutorial(Tutorial):
+    class Meta:
+        proxy = True
+        verbose_name = 'Tutorial/Request'
+        verbose_name_plural = 'My Tutorials and Requests'
+
+class MyTutorialAdmin(TutorialAdmin):
+
+    def get_queryset(self, request):
+        qs = super(TutorialAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(studenttutorialstatus__student=Student.objects.get(user=request.user))
+
+    def changelist_view(self, request, extra_context=None):
+        # Initial filter by first major
+        self.request = request
+        return super(TutorialAdmin,self).changelist_view(request, extra_context=extra_context)
+
+admin.site.register(MyTutorial, MyTutorialAdmin)
+
