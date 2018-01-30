@@ -116,7 +116,7 @@ class TutorialAdmin(admin.ModelAdmin):
 
         mail_subject = 'Tutorialize: new tutorial added'
         template = 'tutorials/new_tutorial_email.html'
-        send_email(email_set, mail_subject, template,
+        send_email(list(email_set), mail_subject, template,
                    {'tutorial': obj, 'domain': get_current_site(request).domain})
 
     def changelist_view(self, request, extra_context=None):

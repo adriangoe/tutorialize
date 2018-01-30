@@ -11,7 +11,7 @@ from .tokens import account_activation_token
 from django.contrib.auth.models import User
 from .models import Tutorial, Student, StudentTutorialStatus
 from django.shortcuts import render, redirect
-from .email_utils import email_current_user, email_tutorial_owners
+from .email_utils import send_email, email_tutorial_owners
 
 
 def signup(request):
@@ -22,15 +22,16 @@ def signup(request):
             user = form.save()
             token = account_activation_token.make_token(user)
 
+            to_email = form.cleaned_data.get('username')
+            name = form.cleaned_data.get('name')
             mail_subject = 'Activate your Tutorialize account.'
             context = {
-                'user': user,
+                'name': name,
                 'domain': get_current_site(request).domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode('ascii'),
                 'token': token,
             }
-            email_current_user(request, mail_subject,
-                                        'tutorials/activation_email.html', context)
+            send_email(to_email, mail_subject, 'tutorials/activation_email.html', context)
 
             return HttpResponse('Please confirm your email address to complete the registration')
 
