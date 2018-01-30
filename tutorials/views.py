@@ -75,7 +75,7 @@ def apply(request, tutorial_id):
     template = 'tutorials/tutorial_request_email.html'
     email_tutorial_owners(request, student, tutorial, status, mail_subject, template)
 
-    return redirect('/_/tutorials/tutorial/')
+    return redirect('/_/tutorials/mytutorial/')
 
 
 def withdraw(request, tutorial_id, student_id):

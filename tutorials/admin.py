@@ -53,12 +53,8 @@ class TutorialAdmin(admin.ModelAdmin):
     inlines = [
         TutorialLinkInline,
     ]
-    ordering = ('-colleges','-title')
+    ordering = ('-title', )
     change_form_template = 'admin/no_history.html'
-
-    def get_queryset(self, request):
-        qs = super(TutorialAdmin, self).get_queryset(request)
-        return TutorialFilterSet(data=request.GET, queryset=qs).filter()
 
     def college(self, obj):
         return str(', '.join([str(c.code) for c in obj.colleges.all()]))
@@ -151,7 +147,9 @@ class TutorialAdmin(admin.ModelAdmin):
         qs = super(TutorialAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.exclude(studenttutorialstatus__student=Student.objects.get(user=request.user))
+
+        return TutorialFilterSet(data=request.GET,
+                                 qs=qs.exclude(studenttutorialstatus__student=Student.objects.get(user=request.user))).filter()
 
     def changelist_view(self, request, extra_context=None):
         # Initial filter by first major
@@ -179,7 +177,6 @@ class StudentTutorialStatusAdmin(admin.ModelAdmin):
     list_per_page = 50
     list_display = ['tutorial', 'student', 'status']
     search_fields = ['tutorial']
-    list_filter = ['tutorial']
     readonly_fields = ['tutorial', 'student']
     ordering = ('-tutorial','-status')
 
