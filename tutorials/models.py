@@ -22,12 +22,19 @@ class Student(models.Model):
 
 
 class Tutorial(models.Model):
+    class Meta:
+        verbose_name = 'Tutorial'
+        verbose_name_plural = 'Browse All Tutorials'
+
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
     colleges = models.ManyToManyField(College)
 
     def __str__(self):
         return '{t} ({c})'.format(t=self.title, c=', '.join([str (c) for c in self.colleges.all()]))
+
+    def n_members(self):
+        return StudentTutorialStatus.objects.filter(tutorial=self).filter(status__in=["A", "O"]).count()
 
 
 class TutorialLink(models.Model):
@@ -38,7 +45,8 @@ class TutorialLink(models.Model):
 class StudentTutorialStatus(models.Model):
     class Meta:
         unique_together = (("tutorial", "student"),)
-        verbose_name_plural = 'Student-tutorial statuses'
+        verbose_name = 'Tutorial Enrollment'
+        verbose_name_plural = 'Manage Enrollments in your Tutorials'
 
     tutorial = models.ForeignKey(Tutorial, on_delete=models.PROTECT)
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
@@ -51,5 +59,5 @@ class StudentTutorialStatus(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_OPTIONS)
 
     def __str__(self):
-        return "({})".format(self.status) + str(self.tutorial) + str(self.student)
+        return "({}) {} {}".format(self.status, self.tutorial, self.student.email)
 
