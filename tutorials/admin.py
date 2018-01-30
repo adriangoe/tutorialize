@@ -78,7 +78,10 @@ class TutorialAdmin(admin.ModelAdmin):
         quota = 5 * user.majors.all().count()
 
         if status and status.status == "P":
-            return format_html("PENDING")
+            return format_html(
+                '<a class="button" href="/cancel/{}/{}">Cancel Request</a>',
+                obj.pk, user.pk
+            )
         elif status and status.status == "A":
             return format_html(
                 '<a class="button" href="/withdraw/{}/{}">Withdraw</a>',
@@ -107,7 +110,7 @@ class TutorialAdmin(admin.ModelAdmin):
 
     def members(self, obj):
         students = StudentTutorialStatus.objects.filter(tutorial=obj).exclude(status="R").exclude(status="P")
-        return "".join([str(s.student) + "(" + s.status + ")" for s in students])
+        return ", ".join([str(s.student) + " (" + s.status + ")" for s in students])
 
     def get_fieldsets(self, request, obj=None):
         user = Student.objects.get(user=request.user)
