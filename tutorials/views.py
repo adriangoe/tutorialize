@@ -90,3 +90,10 @@ def withdraw(request, tutorial_id, student_id):
 
     return redirect('/_/tutorials/tutorial/')
 
+def cancel(request, tutorial_id, student_id):
+    tutorial = Tutorial.objects.get(pk=tutorial_id)
+    student = Student.objects.get(pk=student_id)
+    status = StudentTutorialStatus.objects.filter(student=student).get(tutorial=tutorial)
+    status.delete()
+
+    return redirect('/_/tutorials/tutorial/')
