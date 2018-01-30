@@ -15,6 +15,9 @@ from .email_utils import send_email, email_tutorial_owners
 
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect('/admin')
+
     if request.method == 'POST':
         form = SignUpForm(request.POST)
 
