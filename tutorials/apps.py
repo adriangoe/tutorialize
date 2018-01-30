@@ -9,6 +9,14 @@ DEFAULT_COLLEGES = {
     'AH': 'Arts and Humanities'
 }
 
+# DEFAULT_STUDENT_PERMISSIONS = (
+#     'change_studenttutorialstatus',
+#     'add_tutorial',
+#     'change_tutorial',
+#     'add_tutoriallink',
+#     'change_tutoriallink'
+# )
+
 
 def post_migrate_data_creation_callback(sender, **kwargs):
     from django.contrib.auth.models import Group, Permission
@@ -16,7 +24,16 @@ def post_migrate_data_creation_callback(sender, **kwargs):
     if not exists:
         student_group.save()
 
-    # TODO: add permissions?
+    # permissions = Permission.objects.filter(codename__in=DEFAULT_STUDENT_PERMISSIONS)
+    # print(permissions)
+    # print(Permission.objects.all())
+    # for perm in permissions:
+    #     perm.group_set.add(student_group)
+    #     perm.save()
+    # permission_model = apps.get_model('auth.permission')
+    # pset = permission_model.objects.filter(codename__in=DEFAULT_STUDENT_PERMISSIONS)
+    # print(pset)
+    # print(permission_model.objects.all())
 
     apps = kwargs['apps']
     college_model = apps.get_model('tutorials.college')

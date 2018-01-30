@@ -4,6 +4,8 @@ from .models import College, Student, Tutorial, TutorialLink, StudentTutorialSta
 from django.shortcuts import redirect
 from .email_utils import send_email
 from django.contrib.sites.shortcuts import get_current_site
+from url_filter.filtersets import ModelFilterSet
+
 
 # Register your models here.
 from .models import Tutorial, College, Student, StudentTutorialStatus, TutorialLink
@@ -38,6 +40,11 @@ class TutorialLinkInline(admin.TabularInline):
         return ['url']
 
 
+class TutorialFilterSet(ModelFilterSet):
+    class Meta(object):
+        model = Tutorial
+
+
 class TutorialAdmin(admin.ModelAdmin):
 
     list_per_page = 50
@@ -47,6 +54,10 @@ class TutorialAdmin(admin.ModelAdmin):
     inlines = [
         TutorialLinkInline,
     ]
+
+    def get_queryset(self, request):
+        qs = super(TutorialAdmin, self).get_queryset(request)
+        return TutorialFilterSet(data=request.GET, queryset=qs).filter()
 
     def college(self, obj):
         return str(', '.join([str (c) for c in obj.colleges.all()]))
