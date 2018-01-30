@@ -4,10 +4,14 @@ from django.contrib.auth.models import User, Group
 from .models import College, Student
 
 
-
 class SignUpForm(UserCreationForm):
-    username = forms.EmailField(max_length=254, help_text='Please enter your Minerva email address.')
-    name = forms.CharField(max_length=30, help_text='Please enter your name.')
+    username = forms.EmailField(max_length=254, help_text='Please enter your Minerva email address.',
+                                widget=forms.EmailInput(attrs={'class':'form-control',
+                                                               'placeholder':'yourname@minerva.kgi.edu'}))
+    name = forms.CharField(max_length=30, help_text='Please enter your name.',
+                           widget=forms.TextInput(attrs={'class': 'form-control',
+                                                         'placeholder': 'Your Name'})
+                           )
     majors = forms.ModelMultipleChoiceField(College.objects.all(), to_field_name='code',
                                             help_text='Please select your majors.')
 

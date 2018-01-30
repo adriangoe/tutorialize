@@ -1,0 +1,6 @@
+{% autoescape off %}
+Hi {{ student.name }},
+Your request to join the tutorial "{{ tutorial.title }}" was rejected by its owner.
+You can browse the list of tutorials at:
+http://{{ domain }}/admin/tutorials/tutorial/
+{% endautoescape %}

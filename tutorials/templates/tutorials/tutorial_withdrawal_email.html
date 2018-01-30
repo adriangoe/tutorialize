@@ -1,0 +1,6 @@
+{% autoescape off %}
+Hi {{ owner.name }},
+{{ student.name }} <{{ student.email }}> has withdrawn from your tutorial "{{ tutorial.title }}".
+Please click on the link below to see the current status:
+http://{{ domain }}/admin/tutorials/tutorial/
+{% endautoescape %}

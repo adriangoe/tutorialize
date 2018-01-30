@@ -7,13 +7,11 @@ from django.contrib.auth import login
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
 from .models import Tutorial, Student, StudentTutorialStatus
 from django.shortcuts import render, redirect
-
+from .email_utils import email_current_user, email_tutorial_owners
 
 
 def signup(request):
@@ -22,23 +20,18 @@ def signup(request):
 
         if form.is_valid():
             user = form.save()
-            user.save()
             token = account_activation_token.make_token(user)
 
-            current_site = get_current_site(request)
             mail_subject = 'Activate your Tutorialize account.'
-            message = render_to_string('tutorials/activation_email.html', {
+            context = {
                 'user': user,
-                'domain': current_site.domain,
+                'domain': get_current_site(request).domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode('ascii'),
                 'token': token,
-            })
+            }
+            email_current_user(request, mail_subject,
+                                        'tutorials/activation_email.html', context)
 
-            to_email = form.cleaned_data.get('username')
-            email = EmailMessage(
-                mail_subject, message, to=[to_email]
-            )
-            email.send()
             return HttpResponse('Please confirm your email address to complete the registration')
 
     else:
@@ -74,13 +67,22 @@ def apply(request, tutorial_id):
     s = StudentTutorialStatus(tutorial=tutorial, student=student, status="P")
     s.save()
 
+    mail_subject = 'Tutorialize: tutorial join request'
+    template = 'tutorials/tutorial_request_email.html'
+    email_tutorial_owners(request, student, tutorial, mail_subject, template)
+
     return redirect('/admin/tutorials/tutorial/')
+
 
 def withdraw(request, tutorial_id, student_id):
     tutorial = Tutorial.objects.get(pk=tutorial_id)
     student = Student.objects.get(pk=student_id)
     status = StudentTutorialStatus.objects.filter(student=student).get(tutorial=tutorial)
     status.delete()
+
+    mail_subject = 'Tutorialize: tutorial withdrawal'
+    template = 'tutorials/tutorial_withdrawal_email.html'
+    email_tutorial_owners(request, student, tutorial, mail_subject, template)
 
     return redirect('/admin/tutorials/tutorial/')
 

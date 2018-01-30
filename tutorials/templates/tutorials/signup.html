@@ -1,10 +1,22 @@
 {% extends 'tutorials/base.html' %}
 
 {% block content %}
-  <h2>Sign up</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign up</button>
-  </form>
+  <div class="container" style="max-width: 600px">
+    <div style="margin-bottom: 15px; margin-top: 15px">
+        <h2>Minerva Tutoralize Sign Up</h2>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+            <div>{{ field.help_text|safe }}</div>
+            <div>{{ field }}</div>
+
+
+        </div>
+      {% endfor %}
+      <button type="submit">Sign up</button>
+    </form>
+  </div>
+
 {% endblock %}

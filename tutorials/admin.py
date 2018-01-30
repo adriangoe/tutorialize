@@ -2,11 +2,14 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import College, Student, Tutorial, TutorialLink, StudentTutorialStatus
 from django.shortcuts import redirect
+from .email_utils import send_email
+from django.contrib.sites.shortcuts import get_current_site
 
 # Register your models here.
 from .models import Tutorial, College, Student, StudentTutorialStatus, TutorialLink
 
 [admin.site.register(model) for model in (College, Student)]
+
 
 def remove_from_fieldsets(fieldsets, fields):
     for fieldset in fieldsets:
@@ -105,9 +108,17 @@ class TutorialAdmin(admin.ModelAdmin):
 
         if not StudentTutorialStatus.objects.filter(tutorial=obj):
             student = request.user
-            print(student)
             s = StudentTutorialStatus(tutorial=obj, student=Student.objects.get(user=request.user), status="O")
             s.save()
+
+        email_set = set()
+        for college in obj.colleges:
+            email_set.update([student.email for student in college.student_set])
+
+        mail_subject = 'Tutorialize: new tutorial added'
+        template = 'tutorials/new_tutorial_email.html'
+        send_email(email_set, mail_subject, template,
+                   {'tutorial': obj, 'domain': get_current_site(request).domain})
 
     def changelist_view(self, request, extra_context=None):
         self.request = request
@@ -119,6 +130,7 @@ class TutorialAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Tutorial, TutorialAdmin)
+
 
 class StudentTutorialStatusAdmin(admin.ModelAdmin):
     list_per_page = 50
@@ -136,5 +148,26 @@ class StudentTutorialStatusAdmin(admin.ModelAdmin):
             print(tutorials)
 
             return qs.filter(tutorial__in=tutorials).exclude(student=Student.objects.get(user=request.user))
+
+    def save_model(self, request, obj, form, change):
+        super(StudentTutorialStatusAdmin, self).save_model(request, obj, form, change)
+
+        student = obj.student
+        tutorial = obj.tutorial
+        members = StudentTutorialStatus.objects.filter(tutorial=tutorial).exclude(status="R").exclude(status="P")
+        if obj.status == 'A':
+            mail_subject = 'Tutorialize: tutorial request approved'
+            template = 'tutorials/tutorial_approved_email.html'
+            send_email(student.email, mail_subject, template,
+                       {'student': student, 'tutorial': tutorial,
+                        'members': members, 'domain': get_current_site(request).domain})
+
+        elif obj.status == 'R':
+            mail_subject = 'Tutorialize: tutorial request rejected'
+            template = 'tutorials/tutorial_rejected_email.html'
+            send_email(student.email, mail_subject, template,
+                       {'student': student, 'tutorial': tutorial,
+                        'domain': get_current_site(request).domain})
+
 
 admin.site.register(StudentTutorialStatus, StudentTutorialStatusAdmin)
