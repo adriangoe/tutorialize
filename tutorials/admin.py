@@ -62,11 +62,11 @@ class TutorialAdmin(admin.ModelAdmin):
     def open_spots(self, obj):
         n = obj.n_members()
         color = 'orange'
-        if n in [3,4]:
+        if n in [3,4,5]:
             color = 'green'
-        elif n == 5:
+        elif n == 6:
             color = 'blue'
-        return format_html('<b style="color:{};">{}</b>'.format(color, 5 - n))
+        return format_html('<b style="color:{};">{}</b>'.format(color, 6 - n))
 
     def action_buttons(self, obj):
         user = Student.objects.get(user=self.request.user)
@@ -90,7 +90,7 @@ class TutorialAdmin(admin.ModelAdmin):
                 '<a class="button" href="/_/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage {} Applicants</a>',
                 obj.pk, StudentTutorialStatus.objects.filter(tutorial=obj).filter(status="P").count()
             )
-        elif obj.n_members() > 5:
+        elif obj.n_members() > 6:
             return format_html(
                 'Tutorial full'
             )
