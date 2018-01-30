@@ -4,6 +4,8 @@ from .models import College, Student, Tutorial, TutorialLink, StudentTutorialSta
 from django.shortcuts import redirect
 from .email_utils import send_email
 from django.contrib.sites.shortcuts import get_current_site
+from url_filter.filtersets import ModelFilterSet
+
 
 # Register your models here.
 from .models import Tutorial, College, Student, StudentTutorialStatus, TutorialLink
@@ -38,6 +40,11 @@ class TutorialLinkInline(admin.TabularInline):
         return ['url']
 
 
+class TutorialFilterSet(ModelFilterSet):
+    class Meta(object):
+        model = Tutorial
+
+
 class TutorialAdmin(admin.ModelAdmin):
     list_per_page = 50
     list_display = ['title', 'description', 'college', 'open_spots', 'action_buttons']
@@ -47,6 +54,10 @@ class TutorialAdmin(admin.ModelAdmin):
         TutorialLinkInline,
     ]
     ordering = ('-colleges','-title')
+
+    def get_queryset(self, request):
+        qs = super(TutorialAdmin, self).get_queryset(request)
+        return TutorialFilterSet(data=request.GET, queryset=qs).filter()
 
     def college(self, obj):
         return str(', '.join([str (c) for c in obj.colleges.all()]))
@@ -124,7 +135,7 @@ class TutorialAdmin(admin.ModelAdmin):
 
         mail_subject = 'Tutorialize: new tutorial added'
         template = 'tutorials/new_tutorial_email.html'
-        send_email(email_set, mail_subject, template,
+        send_email(list(email_set), mail_subject, template,
                    {'tutorial': obj, 'domain': get_current_site(request).domain})
 
     def get_queryset(self, request):

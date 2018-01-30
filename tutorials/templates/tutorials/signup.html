@@ -11,7 +11,9 @@
         <div class="form-group">
             <div>{{ field.help_text|safe }}</div>
             <div>{{ field }}</div>
-
+            {% for error in field.errors %}
+                <div><strong>{{ error|escape }}</strong></div>
+            {% endfor %}
 
         </div>
       {% endfor %}
