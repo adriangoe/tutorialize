@@ -130,14 +130,15 @@ class TutorialAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super(TutorialAdmin, self).save_model(request, obj, form, change)
+        obj.save()
 
         if not StudentTutorialStatus.objects.filter(tutorial=obj):
             s = StudentTutorialStatus(tutorial=obj, student=Student.objects.get(user=request.user), status="O")
             s.save()
 
         email_set = set()
-        for college in obj.colleges.all():
-            email_set.update([student.email for student in college.student_set])
+        for college in form.cleaned_data['colleges']:
+            email_set.update([student.email for student in college.student_set.all()])
 
         mail_subject = 'Tutorialize: new tutorial added'
         template = 'tutorials/new_tutorial_email.html'
