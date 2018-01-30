@@ -54,6 +54,7 @@ class TutorialAdmin(admin.ModelAdmin):
         TutorialLinkInline,
     ]
     ordering = ('-colleges','-title')
+    change_form_template = 'admin/no_history.html'
 
     def get_queryset(self, request):
         qs = super(TutorialAdmin, self).get_queryset(request)
@@ -74,6 +75,7 @@ class TutorialAdmin(admin.ModelAdmin):
     def action_buttons(self, obj):
         user = Student.objects.get(user=self.request.user)
         status = StudentTutorialStatus.objects.filter(tutorial=obj).filter(student=user).first()
+        quota = 5 * user.majors.all().count()
 
         if status and status.status == "P":
             return format_html("PENDING")
@@ -93,9 +95,9 @@ class TutorialAdmin(admin.ModelAdmin):
             return format_html(
                 'Tutorial full'
             )
-        elif StudentTutorialStatus.objects.filter(student=user).filter(status__in=["O","A"]).count() >= 5:
+        elif StudentTutorialStatus.objects.filter(student=user).filter(status__in=["O","A"]).count() >= quota:
             return format_html(
-                'You are over your quota of 5'
+                'You are over your quota of {}'.format(quota)
             )
         return format_html(
             '<a class="button" href="/apply/{}">Apply</a>',
@@ -162,6 +164,12 @@ class TutorialAdmin(admin.ModelAdmin):
             return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
         return super(TutorialAdmin,self).changelist_view(request, extra_context=extra_context)
 
+    def get_actions(self, request):
+        #Disable delete
+        actions = super(TutorialAdmin, self).get_actions(request)
+        del actions['delete_selected']
+        return actions
+
 
 admin.site.register(Tutorial, TutorialAdmin)
 
@@ -203,6 +211,12 @@ class StudentTutorialStatusAdmin(admin.ModelAdmin):
             send_email(student.email, mail_subject, template,
                        {'student': student, 'tutorial': tutorial,
                         'domain': get_current_site(request).domain})
+
+    def get_actions(self, request):
+        #Disable delete
+        actions = super(StudentTutorialStatusAdmin, self).get_actions(request)
+        del actions['delete_selected']
+        return actions
 
 
 admin.site.register(StudentTutorialStatus, StudentTutorialStatusAdmin)
