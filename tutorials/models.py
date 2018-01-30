@@ -38,6 +38,9 @@ class Tutorial(models.Model):
 
 
 class TutorialLink(models.Model):
+    class Meta:
+        verbose_name = 'Inspiration/Resource Link'
+        verbose_name_plural = 'Inspiration/Resource Link'
     tutorial = models.ForeignKey(Tutorial, on_delete=models.PROTECT)
     url = models.URLField()
 
