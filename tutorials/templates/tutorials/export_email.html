@@ -6,7 +6,8 @@ Your exported tutorial proposals:
     <strong>Topics:</strong><br>
     {% for status in statuses %}
         ({{ status.priority }}) {{ status.tutorial.title }}
-        [ {{ status.tutorial.description }} ] [ Prerequisites: {{ status.tutorial.prerequisites }} ]
+        [ {{ status.tutorial.description }} ]
+        {% if status.tutorial.prerequisites and status.tutorial.prerequisites != "Not yet" %} [ Prerequisites: {{ status.tutorial.prerequisites }} ] {% endif %}
         {% if forloop.last %}{% else %}<br>{% endif %}
     {% endfor %}
 <br>
