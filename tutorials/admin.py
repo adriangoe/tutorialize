@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from .email_utils import send_email
 from django.contrib.sites.shortcuts import get_current_site
 from url_filter.filtersets import ModelFilterSet
-
+from django.middleware.csrf import get_token
 
 # Register your models here.
 from .models import Tutorial, College, Student, StudentTutorialStatus, TutorialLink
@@ -54,7 +54,7 @@ class TutorialAdmin(admin.ModelAdmin):
         TutorialLinkInline,
     ]
     change_form_template = 'admin/no_history.html'
-    change_list_template = 'admin/header_buttons.html'
+    change_list_template = 'admin/change_list.html'
 
     def college(self, obj):
         return str(', '.join([str(c.code) for c in obj.colleges.all()]))
@@ -182,6 +182,10 @@ class StudentTutorialStatusAdmin(admin.ModelAdmin):
     ordering = ('-tutorial','-status')
     list_filter = ['status', 'tutorial__colleges']
 
+    fieldsets = [
+        (None, {'fields': ['tutorial', 'student', 'status']}),
+    ]
+
     def get_queryset(self, request):
         qs = super(StudentTutorialStatusAdmin, self).get_queryset(request)
         if request.user.is_superuser:
@@ -229,6 +233,8 @@ class MyTutorial(Tutorial):
 
 class MyTutorialAdmin(TutorialAdmin):
 
+    list_display = ['title', 'description', 'college', 'open_spots', 'action_buttons', 'priority_btn']
+
     def get_queryset(self, request):
         qs = super(TutorialAdmin, self).get_queryset(request)
         if request.user.is_superuser:
@@ -239,6 +245,30 @@ class MyTutorialAdmin(TutorialAdmin):
         # Initial filter by first major
         self.request = request
         return super(TutorialAdmin,self).changelist_view(request, extra_context=extra_context)
+
+    def priority_btn(self, obj):
+        if self.request.user.is_superuser:
+            return None
+        user = Student.objects.get(user=self.request.user)
+        status = StudentTutorialStatus.objects.filter(tutorial=obj).filter(student=user).first()
+        priority = 5
+
+        return format_html(
+                '<form action="/set_prio/{}/" method="post"> \
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{}" />\
+                    <select name="prio">\
+                      <option {} value="1">1</option>\
+                      <option {} value="2">2</option>\
+                      <option {} value="3">3</option>\
+                      <option {} value="4">4</option>\
+                      <option {} value="5">5</option>\
+                    </select>\
+                  <input style="padding: 4px 5px;" type="submit" value="Set Priority"></form>',
+                *[status.pk, get_token(self.request)] + [" selected='selected'" if i == status.priority else "" for i in range(1,6)]
+        )
+    priority_btn.short_description = 'Set Priority (1 highest)'
+    priority_btn.allow_tags = True
+
 
 admin.site.register(MyTutorial, MyTutorialAdmin)
 

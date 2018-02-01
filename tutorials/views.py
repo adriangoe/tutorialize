@@ -68,7 +68,7 @@ def activate(request, uidb64, token):
 def apply(request, tutorial_id):
     tutorial = Tutorial.objects.get(pk=tutorial_id)
     student = Student.objects.get(user=request.user)
-    status = StudentTutorialStatus(tutorial=tutorial, student=student, status="P")
+    status = StudentTutorialStatus(tutorial=tutorial, student=student, status="P", priority=1)
     status.save()
 
     mail_subject = 'Tutorialize: tutorial join request'
@@ -97,3 +97,13 @@ def cancel(request, tutorial_id, student_id):
     status.delete()
 
     return redirect('/_/tutorials/tutorial/')
+
+def set_prio(request, status_id):
+    status = StudentTutorialStatus.objects.get(pk=status_id)
+    prio = request.POST['prio']
+    print(prio, "HI ADRIAN")
+
+    status.priority = int(prio)
+    status.save()
+
+    return redirect('/_/tutorials/mytutorial/')
