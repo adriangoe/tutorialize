@@ -3,9 +3,10 @@
 {% block content_title %}
     {% if 'mytutorial' in request.path %}
         <h1>My Tutorials and Applications</h1>
-        <p><a href="../tutorial" class="button">Go To Browse Available Tutorials</a></p>
-        <p>Export Feature coming soon!</p>
-
+        <p>
+            <a href="../tutorial" class="button">Go To Browse Available Tutorials</a>
+            <a href="/export" class="button">Export Tutorials to Email</a>
+        </p>
     {% else %}
         <h1>Browse Tutorials</h1>
         <p><a href="../mytutorial" class="button">Go To My Tutorials and Applications</a></p>

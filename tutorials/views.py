@@ -90,6 +90,7 @@ def withdraw(request, tutorial_id, student_id):
 
     return redirect('/_/tutorials/tutorial/')
 
+
 def cancel(request, tutorial_id, student_id):
     tutorial = Tutorial.objects.get(pk=tutorial_id)
     student = Student.objects.get(pk=student_id)
@@ -97,3 +98,23 @@ def cancel(request, tutorial_id, student_id):
     status.delete()
 
     return redirect('/_/tutorials/tutorial/')
+
+
+def export(request):
+    user = request.user
+    student = Student.objects.get(user=user)
+    statuses = StudentTutorialStatus.objects.filter(student=student).filter(status__in=['O', 'A']).order_by('priority', 'id')
+    statuses_per_tutorial = [StudentTutorialStatus.objects.
+                                 filter(tutorial=status.tutorial).
+                                 exclude(status="R").
+                                 exclude(status="P").
+                                 order_by('student__name')
+                             for status in statuses]
+
+    send_email(user.username, 'Tutorialize Proposals Export', 'tutorials/export_email.html', {
+        'student': student, 'statuses': statuses, 'statuses_per_tutorial': statuses_per_tutorial
+    }, html=True)
+
+    return render(request, 'tutorials/export_email_alert_and_redirect.html', {})
+
+

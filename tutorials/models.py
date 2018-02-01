@@ -28,6 +28,7 @@ class Tutorial(models.Model):
 
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
+    prerequisites = models.TextField(max_length=1000)
     colleges = models.ManyToManyField(College)
 
     def __str__(self):
@@ -60,6 +61,7 @@ class StudentTutorialStatus(models.Model):
         ('R', 'Rejected'),
     )
     status = models.CharField(max_length=1, choices=STATUS_OPTIONS)
+    priority = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return "({}) {} {}".format(self.status, self.tutorial, self.student.email)

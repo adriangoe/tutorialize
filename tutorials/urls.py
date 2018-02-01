@@ -10,4 +10,5 @@ urlpatterns = [
     re_path(r'^apply/(?P<tutorial_id>\d+)/', views.apply, name="apply"),
     re_path(r'^withdraw/(?P<tutorial_id>\d+)/(?P<student_id>\d+)/', views.withdraw, name="withdraw"),
     re_path(r'^cancel/(?P<tutorial_id>\d+)/(?P<student_id>\d+)/', views.cancel, name="cancel"),
+    re_path(r'^export/?$', views.export, name='export'),
 ]
