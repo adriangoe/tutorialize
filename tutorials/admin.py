@@ -48,13 +48,13 @@ class TutorialFilterSet(ModelFilterSet):
 class TutorialAdmin(admin.ModelAdmin):
     list_per_page = 50
     list_display = ['title', 'description', 'college', 'open_spots', 'action_buttons']
-    search_fields = ['title']
+    search_fields = ['title', 'description']
     list_filter = ['colleges']
     inlines = [
         TutorialLinkInline,
     ]
-    ordering = ('-title', )
     change_form_template = 'admin/no_history.html'
+    change_list_template = 'admin/header_buttons.html'
 
     def college(self, obj):
         return str(', '.join([str(c.code) for c in obj.colleges.all()]))
@@ -160,7 +160,6 @@ class TutorialAdmin(admin.ModelAdmin):
             return super(TutorialAdmin,self).changelist_view(request)
         referrer = request.META.get('HTTP_REFERER', '')
         get_param = "colleges__id__in={}".format(",".join([str(m.id) for m in Student.objects.get(user=request.user).majors.all()])) # set default filter on colleges here
-        print(get_param, request.path)
         if len(request.GET) == 0 and '?' not in referrer:
             return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
         return super(TutorialAdmin,self).changelist_view(request, extra_context=extra_context)
@@ -178,9 +177,10 @@ admin.site.register(Tutorial, TutorialAdmin)
 class StudentTutorialStatusAdmin(admin.ModelAdmin):
     list_per_page = 50
     list_display = ['tutorial', 'student', 'status']
-    search_fields = ['tutorial']
+    search_fields = ['tutorial__title', 'student__name', 'status']
     readonly_fields = ['tutorial', 'student']
     ordering = ('-tutorial','-status')
+    list_filter = ['status', 'tutorial__colleges']
 
     def get_queryset(self, request):
         qs = super(StudentTutorialStatusAdmin, self).get_queryset(request)
