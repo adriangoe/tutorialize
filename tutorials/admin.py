@@ -133,7 +133,7 @@ class TutorialAdmin(admin.ModelAdmin):
         super(TutorialAdmin, self).save_model(request, obj, form, change)
 
         if not StudentTutorialStatus.objects.filter(tutorial=obj):
-            s = StudentTutorialStatus(tutorial=obj, student=Student.objects.get(user=request.user), status="O")
+            s = StudentTutorialStatus(tutorial=obj, student=Student.objects.get(user=request.user), status="O", priority=1)
             s.save()
 
         if not change:
