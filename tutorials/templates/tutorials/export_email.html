@@ -1,0 +1,23 @@
+{# {% autoescape off %} #}
+Hi {{ student.name }},
+
+Your exported tutorial proposals:
+<p>
+    <strong>Topics:</strong><br>
+    {% for status in statuses %}
+        ({{ status.priority }}) {{ status.tutorial.title }}
+        [ {{ status.tutorial.description }} ] [ Prerequisites: {{ status.tutorial.prerequisites }} ]
+        {% if forloop.last %}{% else %}<br>{% endif %}
+    {% endfor %}
+<br>
+</p>
+<p>
+    <strong>Other students:</strong><br>
+    {% for status_list in statuses_per_tutorial %}
+        {{ status_list.0.tutorial.title }}:
+        {% for student_status in status_list %} {{ student_status.student.name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}
+        {% if forloop.last %}{% else %}<br>{% endif %}
+    {% endfor %}
+</p>
+
+{# {% endautoescape %} #}

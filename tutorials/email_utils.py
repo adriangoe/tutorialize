@@ -23,12 +23,15 @@ def email_current_user(request, subject, template, context):
     send_email(to_email, subject, template, context)
 
 
-def send_email(to_emails, subject, template, context):
+def send_email(to_emails, subject, template, context, html=False):
     if isinstance(to_emails, str):
         to_emails = [to_emails]
 
     message = render_to_string(template, context)
     email = EmailMessage(subject, message, to=to_emails)
+    if html:
+        email.content_subtype = "html"
+
     email.send()
 
 
