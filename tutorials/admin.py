@@ -90,7 +90,7 @@ class TutorialAdmin(admin.ModelAdmin):
                 '<a class="button" style="top: 7px; position: relative;"href="/_/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage({})</a>',
                 obj.pk, StudentTutorialStatus.objects.filter(tutorial=obj).filter(status="P").count()
             )
-        elif obj.n_members() > 6:
+        elif obj.n_members() > 5:
             return format_html(
                 'Tutorial full'
             )
