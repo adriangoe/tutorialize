@@ -47,7 +47,7 @@ class TutorialFilterSet(ModelFilterSet):
 
 class TutorialAdmin(admin.ModelAdmin):
     list_per_page = 50
-    list_display = ['title', 'description', 'college', 'open_spots', 'action_buttons']
+    list_display = ['title', 'description', 'prerequisites', 'college', 'open_spots', 'action_buttons']
     search_fields = ['title', 'description']
     list_filter = ['colleges']
     inlines = [
@@ -75,22 +75,22 @@ class TutorialAdmin(admin.ModelAdmin):
 
         if status and status.status == "P":
             return format_html(
-                '<a class="button" href="/cancel/{}/{}">Cancel Request</a>',
+                '<a class="button" style="top: 7px; position: relative;"href="/cancel/{}/{}">Cancel</a>',
                 obj.pk, user.pk
             )
         elif status and status.status == "A":
             return format_html(
-                '<a class="button" href="/withdraw/{}/{}">Withdraw</a>',
+                '<a class="button" style="top: 7px; position: relative;"href="/withdraw/{}/{}">Withdraw</a>',
                 obj.pk, user.pk
             )
         elif status and status.status == "R":
             return format_html("Rejected :(")
         elif status and status.status == "O":
             return format_html(
-                '<a class="button" href="/_/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage {} Applicants</a>',
+                '<a class="button" style="top: 7px; position: relative;"href="/_/tutorials/studenttutorialstatus/?tutorial__id__exact={}">Manage({})</a>',
                 obj.pk, StudentTutorialStatus.objects.filter(tutorial=obj).filter(status="P").count()
             )
-        elif obj.n_members() > 6:
+        elif obj.n_members() > 5:
             return format_html(
                 'Tutorial full'
             )
@@ -99,7 +99,7 @@ class TutorialAdmin(admin.ModelAdmin):
                 'You are over your quota of {}'.format(quota)
             )
         return format_html(
-            '<a class="button" href="/apply/{}">Apply</a>',
+            '<a class="button" style="top: 7px; position: relative;"href="/apply/{}">Apply</a>',
             obj.pk
         )
     action_buttons.allow_tags = True
@@ -126,14 +126,14 @@ class TutorialAdmin(admin.ModelAdmin):
                 request, obj=obj
             ) + ('open_spots', 'members')
         elif status and status.status == "A":
-            return ['title', 'description', 'colleges', 'open_spots', 'members', 'action_buttons']
-        return ['title', 'description', 'colleges', 'open_spots', 'action_buttons']
+            return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'members', 'action_buttons']
+        return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'action_buttons']
 
     def save_model(self, request, obj, form, change):
         super(TutorialAdmin, self).save_model(request, obj, form, change)
 
         if not StudentTutorialStatus.objects.filter(tutorial=obj):
-            s = StudentTutorialStatus(tutorial=obj, student=Student.objects.get(user=request.user), status="O")
+            s = StudentTutorialStatus(tutorial=obj, student=Student.objects.get(user=request.user), status="O", priority=1)
             s.save()
 
         if not change:
