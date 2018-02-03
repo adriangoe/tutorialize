@@ -127,7 +127,7 @@ class TutorialAdmin(admin.ModelAdmin):
             ) + ('open_spots', 'members', 'enrolled_priorities')
         elif status and status.status == "A":
             return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'members', 'enrolled_priorities', 'action_buttons']
-        return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'enrolled_priorities', 'action_buttons']
+        return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'action_buttons']
 
     def save_model(self, request, obj, form, change):
         super(TutorialAdmin, self).save_model(request, obj, form, change)
