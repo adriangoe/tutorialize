@@ -124,10 +124,10 @@ class TutorialAdmin(admin.ModelAdmin):
         if not obj or (status and status.status == "O") or request.user.is_superuser:
             return super(TutorialAdmin, self).get_readonly_fields(
                 request, obj=obj
-            ) + ('open_spots', 'members')
+            ) + ('open_spots', 'members', 'enrolled_priorities')
         elif status and status.status == "A":
-            return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'members', 'action_buttons']
-        return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'action_buttons']
+            return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'members', 'enrolled_priorities', 'action_buttons']
+        return ['title', 'description', 'prerequisites', 'colleges', 'open_spots', 'enrolled_priorities', 'action_buttons']
 
     def save_model(self, request, obj, form, change):
         super(TutorialAdmin, self).save_model(request, obj, form, change)
