@@ -170,6 +170,14 @@ class TutorialAdmin(admin.ModelAdmin):
         del actions['delete_selected']
         return actions
 
+    def enrolled_priorities(self, obj):
+        statuses = StudentTutorialStatus.objects.filter(tutorial=obj).exclude(status="R").exclude(status="P")
+        if len(statuses) < 3:
+            return 'Priorities displayed only with three or more students'
+
+        priorities = sorted([status.priority for status in statuses])
+        return ", ".join([str(p) for p in priorities])
+
 
 admin.site.register(Tutorial, TutorialAdmin)
 
