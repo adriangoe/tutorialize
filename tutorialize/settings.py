@@ -141,4 +141,4 @@ EMAIL_HOST_USER = 'minerva.tutorialize.3@gmail.com'
 # EMAIL_HOST_PASSWORD = 'MinervaTutorialize1!'
 EMAIL_HOST_PASSWORD = 'MinervaTutorialize3#'
 EMAIL_PORT = 587
-'
+
