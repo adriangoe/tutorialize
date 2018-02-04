@@ -8,7 +8,7 @@ Your exported tutorial proposals:
         ({{ status.priority }}) ({% for college in status.tutorial.colleges.all %}{{ college.code }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}) {{ status.tutorial.title }}
         [ {{ status.tutorial.description }} ]
         {% if status.tutorial.prerequisites and status.tutorial.prerequisites != "Not yet" %} [ Prerequisites: {{ status.tutorial.prerequisites }} ] {% endif %}
-        {% if forloop.last %}{% else %}<br>{% endif %}
+        {% if forloop.last %}{% else %}<br><br>{% endif %}
     {% endfor %}
 <br>
 </p>
