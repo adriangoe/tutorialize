@@ -137,8 +137,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_HOST_USER = 'minerva.tutorialize@gmail.com'
-EMAIL_HOST_USER = 'minerva.tutorialize.5@gmail.com'
+EMAIL_HOST_USER = 'minerva.tutorialize.6@gmail.com'
 # EMAIL_HOST_PASSWORD = 'MinervaTutorialize1!'
-EMAIL_HOST_PASSWORD = 'MinervaTutorialize5@'
+EMAIL_HOST_PASSWORD = 'MinervaTutorialize6!'
 EMAIL_PORT = 587
 
