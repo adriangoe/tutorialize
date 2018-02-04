@@ -17,7 +17,7 @@ Your exported tutorial proposals:
     {% for status_list in statuses_per_tutorial %}
         {{ status_list.0.tutorial.title }}:
         {% for student_status in status_list %} {{ student_status.student.name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}
-        {% if forloop.last %}{% else %}<br>{% endif %}
+        {% if forloop.last %}{% else %}<br><br>{% endif %}
     {% endfor %}
 </p>
 
