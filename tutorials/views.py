@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from .models import Tutorial, Student, StudentTutorialStatus
 from django.shortcuts import render, redirect
 from .email_utils import send_email, email_tutorial_owners
+import csv
 
 
 def signup(request):
@@ -127,3 +128,19 @@ def export(request):
     }, html=True)
 
     return render(request, 'tutorials/export_email_alert_and_redirect.html', {})
+
+def export_csv(request):
+    if not request.user.is_superuser:
+        return redirect('/')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="tutorialize.csv"'
+
+    statuses = StudentTutorialStatus.objects.filter(status__in=['O', 'A']).order_by('tutorial', 'priority', 'id')
+    writer = csv.writer(response)
+    writer.writerow(['Tutorial Name', 'Description', 'Requirements', 'Colleges', 'Student Name', 'Student Majors', 'Student Priority'])
+    for status in statuses:
+        writer.writerow([status.tutorial.title, status.tutorial.description, status.tutorial.prerequisites, ' '.join([str(c.code) for c in status.tutorial.colleges.all()]), status.student.name, ' '.join([str(c.code) for c in status.student.majors.all()]), status.priority])
+
+    # TODO finish writing export.
+    return response

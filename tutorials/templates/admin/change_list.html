@@ -6,7 +6,11 @@
         <h1>My Tutorials and Applications</h1>
         <p>
             <a href="../tutorial" class="button">Go To Browse Available Tutorials</a>
-            <a href="/export" class="button">Export Tutorials to Email</a>
+            {% if request.user.is_superuser %}
+                <a href="/export_csv" class="button">Export All to CSV</a>
+            {% else %}
+                <a href="/export" class="button">Export Tutorials to Email</a>
+            {% endif %}
         </p>
     {% else %}
         <h1>Browse Tutorials</h1>

@@ -12,4 +12,5 @@ urlpatterns = [
     re_path(r'^cancel/(?P<tutorial_id>\d+)/(?P<student_id>\d+)/', views.cancel, name="cancel"),
     re_path(r'^set_prio/(?P<status_id>\d+)/', views.set_prio, name="set_prio"),
     re_path(r'^export/?$', views.export, name='export'),
+    re_path(r'^export_csv/?$', views.export_csv, name='export_csv')
 ]
