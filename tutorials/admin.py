@@ -136,15 +136,16 @@ class TutorialAdmin(admin.ModelAdmin):
             s = StudentTutorialStatus(tutorial=obj, student=Student.objects.get(user=request.user), status="O", priority=1)
             s.save()
 
-        if not change:
-            email_set = set()
-            for college in form.cleaned_data['colleges']:
-                email_set.update([student.email for student in college.student_set.all()])
-
-            mail_subject = 'Tutorialize: new tutorial added'
-            template = 'tutorials/new_tutorial_email.html'
-            send_email(list(email_set), mail_subject, template,
-                       {'tutorial': obj, 'domain': get_current_site(request).domain})
+        # GD: disable new tutorial email
+        # if not change:
+        #     email_set = set()
+        #     for college in form.cleaned_data['colleges']:
+        #         email_set.update([student.email for student in college.student_set.all()])
+        #
+        #     mail_subject = 'Tutorialize: new tutorial added'
+        #     template = 'tutorials/new_tutorial_email.html'
+        #     send_email(list(email_set), mail_subject, template,
+        #                {'tutorial': obj, 'domain': get_current_site(request).domain})
 
     def get_queryset(self, request):
         qs = super(TutorialAdmin, self).get_queryset(request)
