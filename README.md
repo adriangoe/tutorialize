@@ -1,49 +1,13 @@
-# Heroku Django Starter Template
+# Tutorialize
 
-An utterly fantastic project starter template for Django 2.0.
+Tutorialize is a Student Driven Initiative developed within 24hrs to empower students at MSKGI to coordinate topic and group assignments ahead of their Senior Tutorials and was used to group ~120 students in their preferred group assignments and topics in Spring 2018.
 
-## Features
+The platform is designed to empower students and give them control over which peers they'd like to work with, while maximizing transparency and reducing awkwardness due to one-sided incompatibility.
 
-- Production-ready configuration for Static Files, Database Settings, Gunicorn, etc.
-- Enhancements to Django's static file serving functionality via WhiteNoise.
-- Latest Python 3.6 runtime environment.
+## Django
 
-## How to Use
-
-To use this project, follow these steps:
-
-1. Create your working environment.
-2. Install Django (`$ pipenv install django`)
-3. Create a new project using this template
-
-## Creating Your Project
-
-Using this template to create a new Django app is easy::
-
-    $ django-admin.py startproject --template=https://github.com/heroku/heroku-django-template/archive/master.zip --name=Procfile helloworld
-
-(If this doesn't work on windows, replace `django-admin.py` with `django-admin`)
-
-You can replace ``helloworld`` with your desired project name.
-
-## Deployment to Heroku
-
-    $ git init
-    $ git add -A
-    $ git commit -m "Initial commit"
-
-    $ heroku create
-    $ git push heroku master
-
-    $ heroku run python manage.py migrate
-
-See also, a [ready-made application](https://github.com/heroku/python-getting-started), ready to deploy.
-
+Tutorialize is built on top of the django admin interface and only accessible with an MSKGI email address.
 
 ## License: MIT
 
-## Further Reading
-
-- [Gunicorn](https://warehouse.python.org/project/gunicorn/)
-- [WhiteNoise](https://warehouse.python.org/project/whitenoise/)
-- [dj-database-url](https://warehouse.python.org/project/dj-database-url/)
+With thanks to https://github.com/heroku/heroku-django-template
